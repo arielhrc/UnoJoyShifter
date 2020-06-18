@@ -1,6 +1,6 @@
-
-
-  
+#include <HX711.h>
+#include "UnoJoy.h" 
+ 
 //  G27 shifter to USB interface
 //  based on a TEENSY
 //  Original by pascalh http://insidesimracing.tv/forums/topic/13189-diy-g25-shifter-interface-with-h-pattern-sequential-and-handbrake-modes/
@@ -34,12 +34,20 @@
 #define CLOCK_PIN          5 //A3
 #define X_AXIS_PIN         A0 //A9
 #define Y_AXIS_PIN         A2 //A8
-#define HANDBRAKE          A5 //A10
+
 // H-shifter mode analog axis thresholds
 #define HS_XAXIS_12        400 //Gears 1,2
 #define HS_XAXIS_56        675 //Gears 5,6, R
 #define HS_YAXIS_135       700 //Gears 1,3,5
 #define HS_YAXIS_246       375 //Gears 2,4,6, R
+
+// HX711 circuit wiring
+//#define HANDBRAKE          7 //A10
+
+const int LOADCELL_DOUT_PIN = A4;
+const int LOADCELL_SCK_PIN = A5;
+
+HX711 scale;
 
 // Digital inputs definitions
 #define DI_REVERSE         1
@@ -75,7 +83,9 @@ void SetupPins(void){
   // G27 shifter analog inputs configuration
   pinMode(X_AXIS_PIN, INPUT_PULLUP);   // X axis
   pinMode(Y_AXIS_PIN, INPUT_PULLUP);   // Y axis
-  pinMode(HANDBRAKE, INPUT);
+  //pinMode(HANDBRAKE, INPUT);
+  pinMode(LOADCELL_DOUT_PIN, INPUT);
+  
   // G27 shift register interface configuration
   pinMode(DATA_IN_PIN, INPUT);         // Data in
   pinMode(MODE_PIN, OUTPUT);           // Parallel/serial mode
@@ -92,6 +102,13 @@ void SetupPins(void){
   digitalWrite(LED_PIN, LOW);
   digitalWrite(MODE_PIN, HIGH);
   digitalWrite(CLOCK_PIN, HIGH);  
+
+  scale.begin(LOADCELL_DOUT_PIN, LOADCELL_SCK_PIN);
+  scale.set_gain();
+  scale.set_scale(-10000);
+  scale.tare();                // reset the scale to 0
+  
+ 
 }
 
 dataForController_t getControllerData(void){
@@ -121,14 +138,17 @@ dataForController_t getControllerData(void){
   //Hand Brake Section
 
   int hbState = 0;
-
-  hbState =  analogRead(HANDBRAKE);
+  hbState = abs(scale.get_units(1));
+  if (hbState>20) G27Shifter.leftStickX = hbState; //Serial.println(Val);
+  else G27Shifter.leftStickX =0 ; 
+ 
+  //hbState =  analogRead(HANDBRAKE);
   //Serial.println(hbState);
-  if (hbState > 20 ) {
-    G27Shifter.button16 = 0;  }
-  else {
-    G27Shifter.button16 = 0;
-  }
+ //// if (hbState > 20 ) {
+ //  G27Shifter.button16 = 0;  }
+//  else {
+///    G27Shifter.button16 = 0;   
+ // }
 
   //Shifter Section
   // Reading of shifter position
@@ -169,7 +189,8 @@ dataForController_t getControllerData(void){
 
     for (int gr = 1;gr<8;gr++)
     {
-      G27Shifter.clearButton(gr,G27Shifter);
+    //  G27Shifter.clearButton(gr, G27Shifter);
+      clearButton(gr, G27Shifter);
     }
   }
   /*G27Shifter.triangleOn = 0;
@@ -184,7 +205,7 @@ dataForController_t getControllerData(void){
   } */
  
   // Depress virtual button for current gear
-  if (gear > 0) G27Shifter.setButton(gear,G27Shifter);  
+  if (gear > 0) setButton(gear, G27Shifter);  
 //  //Depress virtual button for current gear
 
 
@@ -268,7 +289,7 @@ dataForController_t getControllerData(void){
   
   //all other normal button states for buttons 8 - 16
       // Set state of virtual buttons for all the physical buttons (Excluding Gears and the hat switch)
-      for (int i = 4; i < 12; i++) G27Shifter.setButton((3 + i),G27Shifter);
+      for (int i = 4; i < 12; i++) setButton((3 + i),G27Shifter);
 
  // Hat Switch Section
   for (int i = 12; i < 16; i++)
@@ -304,8 +325,7 @@ dataForController_t getControllerData(void){
       G27Shifter.dpadLeftOn=1;
       G27Shifter.dpadUpOn=1;
     }
-  }
-  
+  } 
     
       /*
       G27Shifter.r2On = b[4];
@@ -322,7 +342,7 @@ dataForController_t getControllerData(void){
 return G27Shifter;
 }
 
-void setButton(int button, dataForController){
+void setButton(int button, dataForController_t dataForController){
 dataForController_t controllerData = dataForController;
     switch(button){
     case 1:
@@ -392,7 +412,7 @@ dataForController_t controllerData = dataForController;
   //return controllerData;
   }
 
-void clearButton(int button, dataForController){
+void clearButton(int button, dataForController_t dataForController){
     dataForController_t controllerData = dataForController;
     switch(button){
     case 1:
@@ -460,6 +480,4 @@ void clearButton(int button, dataForController){
       break;
     }
   //return controllerData;
-  }
-
-  
+  }  
