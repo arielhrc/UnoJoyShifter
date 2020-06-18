@@ -206,87 +206,8 @@ dataForController_t getControllerData(void){
  
   // Depress virtual button for current gear
   if (gear > 0) setButton(gear, G27Shifter);  
-//  //Depress virtual button for current gear
-
-
- /*
-  switch(gear){  
-    case 0: //neutral  // Release virtual buttons for all gears
-      
-      G27Shifter.triangleOn = 0;
-      G27Shifter.circleOn = 0;
-      G27Shifter.squareOn = 0;
-      G27Shifter.crossOn = 0;
-      G27Shifter.l1On = 0;
-      G27Shifter.r1On = 0;
-      G27Shifter.selectOn =0;
-      break;
-    case 1: //1st Gear
-      G27Shifter.squareOn = 1;
-      G27Shifter.crossOn = 0;
-      G27Shifter.circleOn = 0;
-      G27Shifter.triangleOn = 0;
-      G27Shifter.l1On = 0;
-      G27Shifter.r1On = 0;
-      G27Shifter.l2On = 0;
-      break;
-    case 2: //2nd Gear
-      G27Shifter.squareOn = 0;
-      G27Shifter.crossOn = 1;
-      G27Shifter.circleOn = 0;
-      G27Shifter.triangleOn = 0;
-      G27Shifter.l1On = 0;
-      G27Shifter.r1On = 0;
-      G27Shifter.l2On = 0;
-      break;
-    case 3: //3rd gear
-      G27Shifter.squareOn = 0;
-      G27Shifter.crossOn = 0;
-      G27Shifter.circleOn = 1;
-      G27Shifter.triangleOn = 0;
-      G27Shifter.l1On = 0;
-      G27Shifter.r1On = 0;
-      G27Shifter.l2On = 0;
-      break;
-    case 4: //4th Geat
-    G27Shifter.squareOn = 0;
-      G27Shifter.crossOn = 0;
-      G27Shifter.circleOn = 0;
-      G27Shifter.triangleOn = 1;
-      G27Shifter.l1On = 0;
-      G27Shifter.r1On = 0;
-      G27Shifter.l2On = 0;
-        break;
-    case 5: //5th gear
-      G27Shifter.squareOn = 0;
-      G27Shifter.crossOn = 0;
-      G27Shifter.circleOn = 0;
-      G27Shifter.triangleOn = 0;
-      G27Shifter.l1On = 1;
-      G27Shifter.r1On = 0;
-      G27Shifter.l2On = 0;
-      break;
-    case 6: //6th Gear
-      G27Shifter.squareOn = 0;
-      G27Shifter.crossOn = 0;
-      G27Shifter.circleOn = 0;
-      G27Shifter.triangleOn = 0;
-      G27Shifter.l1On = 0;
-      G27Shifter.r1On = 1;
-      G27Shifter.l2On = 0;
-      break;
-    case 7: //Reverse
-      G27Shifter.squareOn = 0;
-      G27Shifter.crossOn = 0;
-      G27Shifter.circleOn = 0;
-      G27Shifter.triangleOn = 0;
-      G27Shifter.l1On = 0;
-      G27Shifter.r1On = 0;
-      G27Shifter.l2On = 1;
-      break;
-  }
-  */
-  
+  //Depress virtual button for current gear
+ 
   //all other normal button states for buttons 8 - 16
       // Set state of virtual buttons for all the physical buttons (Excluding Gears and the hat switch)
       for (int i = 4; i < 12; i++) setButton((3 + i),G27Shifter);
