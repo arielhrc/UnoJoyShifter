@@ -25,7 +25,7 @@
 
 //  Other Items
 //  Item                Pin
-//  HandBrake           A5
+//  HandBrake           7
 
 // Teensy pin definitions
 #define LED_PIN            13 //A2
@@ -65,7 +65,7 @@ HX711 scale;
 #define DI_DPAD_BOTTOM     14
 #define DI_DPAD_TOP        15
 #define AI_HANDBRAKE       16
-
+int counter = 0;
 bool enableDebug = false;
 void setup()
 {
@@ -139,16 +139,9 @@ dataForController_t getControllerData(void){
 
   int hbState = 0;
   hbState = abs(scale.get_units(1));
-  if (hbState>20) G27Shifter.leftStickX = hbState; //Serial.println(Val);
-  else G27Shifter.leftStickX =0 ; 
- 
-  //hbState =  analogRead(HANDBRAKE);
-  //Serial.println(hbState);
- //// if (hbState > 20 ) {
- //  G27Shifter.button16 = 0;  }
-//  else {
-///    G27Shifter.button16 = 0;   
- // }
+  if (hbState>20) G27Shifter.leftStickY = hbState;
+  else G27Shifter.leftStickY =0 ; 
+
 
   //Shifter Section
   // Reading of shifter position
@@ -184,34 +177,26 @@ dataForController_t getControllerData(void){
   if (gear != 6) b[DI_REVERSE] = 0;  // Reverse gear is allowed only on 6th gear position
   if (b[DI_REVERSE] == 1) gear = 7;  // 6th gear is deactivated if reverse gear is engaged
 
-
   if (gear < 1) {
 
     for (int gr = 1;gr<8;gr++)
     {
     //  G27Shifter.clearButton(gr, G27Shifter);
-      clearButton(gr, G27Shifter);
+    clearButton(gr, G27Shifter);
     }
-  }
-  /*G27Shifter.triangleOn = 0;
-  G27Shifter.circleOn = 0;
-  G27Shifter.squareOn = 0;
-  G27Shifter.crossOn = 0;
-  G27Shifter.l1On = 0;
-  G27Shifter.r1On = 0;
-  G27Shifter.selectOn =0;
-  G27Shifter.startOn = 0;
-  G27Shifter.homeOn = 0; 
-  } */
- 
+  } 
+  
   // Depress virtual button for current gear
-  if (gear > 0) setButton(gear, G27Shifter);  
+  if (gear > 0) G27Shifter = setButton(gear, G27Shifter);  
   //Depress virtual button for current gear
- 
-  //all other normal button states for buttons 8 - 16
+  
+  //all other normal button states for buttons 8 - 16    
       // Set state of virtual buttons for all the physical buttons (Excluding Gears and the hat switch)
-      for (int i = 4; i < 12; i++) setButton((3 + i),G27Shifter);
-
+  for (int i = 4; i < 12; i++) {
+     if (b[i]>0) setButton(b[i],G27Shifter);
+     else clearButton(b[i],G27Shifter);
+  }    
+      
  // Hat Switch Section
   for (int i = 12; i < 16; i++)
   {
@@ -247,24 +232,11 @@ dataForController_t getControllerData(void){
       G27Shifter.dpadUpOn=1;
     }
   } 
-    
-      /*
-      G27Shifter.r2On = b[4];
-      G27Shifter.selectOn = b[5];
-      G27Shifter.startOn = b[6];
-      G27Shifter.homeOn = b[7];
-      G27Shifter.l3On = b[8];
-      G27Shifter.r3On = b[9];
-      G27Shifter.l4On = b[10];   
-      G27Shifter.r4On = b[11];
-      */
-
   // Write new virtual G27Shifter state
 return G27Shifter;
 }
 
-void setButton(int button, dataForController_t dataForController){
-dataForController_t controllerData = dataForController;
+dataForController_t setButton(int button, dataForController_t controllerData){
     switch(button){
     case 1:
      controllerData.button1 = 1; 
@@ -330,11 +302,10 @@ dataForController_t controllerData = dataForController;
       controllerData.button16 = 1; 
       break;
     }
-  //return controllerData;
+  return controllerData;
   }
 
-void clearButton(int button, dataForController_t dataForController){
-    dataForController_t controllerData = dataForController;
+dataForController_t clearButton(int button, dataForController_t controllerData){ 
     switch(button){
     case 1:
      controllerData.button1 = 0; 
@@ -400,5 +371,5 @@ void clearButton(int button, dataForController_t dataForController){
       controllerData.button16 = 0; 
       break;
     }
-  //return controllerData;
+  return controllerData;
   }  
