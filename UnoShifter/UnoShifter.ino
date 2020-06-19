@@ -6,6 +6,7 @@
 //  Original by pascalh http://insidesimracing.tv/forums/topic/13189-diy-g25-shifter-interface-with-h-pattern-sequential-and-handbrake-modes/
 //  Adapted by jssting for UNO
 //  Updated to include the POV Hat switch
+//  Updated to include Handbrake using loadcell(strain gauge with Hx711 amplifier with data pin on A4 and Clock Pin on A5
 
 //  1 operating mode
 //  - H-pattern shifter
@@ -25,7 +26,7 @@
 
 //  Other Items
 //  Item                Pin
-//  HandBrake           7
+//  HandBrake           A4
 
 // Teensy pin definitions
 #define LED_PIN            13 //A2
@@ -42,8 +43,6 @@
 #define HS_YAXIS_246       375 //Gears 2,4,6, R
 
 // HX711 circuit wiring
-//#define HANDBRAKE          7 //A10
-
 const int LOADCELL_DOUT_PIN = A4;
 const int LOADCELL_SCK_PIN = A5;
 
@@ -64,8 +63,7 @@ HX711 scale;
 #define DI_DPAD_LEFT       13
 #define DI_DPAD_BOTTOM     14
 #define DI_DPAD_TOP        15
-#define AI_HANDBRAKE       16
-int counter = 0;
+
 bool enableDebug = false;
 void setup()
 {
@@ -85,6 +83,7 @@ void SetupPins(void){
   pinMode(Y_AXIS_PIN, INPUT_PULLUP);   // Y axis
   //pinMode(HANDBRAKE, INPUT);
   pinMode(LOADCELL_DOUT_PIN, INPUT);
+  pinMode(LOADCELL_SCK_PIN, OUTPUT);
   
   // G27 shift register interface configuration
   pinMode(DATA_IN_PIN, INPUT);         // Data in
@@ -95,7 +94,7 @@ void SetupPins(void){
   pinMode(LED_PIN, OUTPUT);            // LED
 
   // Virtual serial interface configuration
-//  Serial.begin(38400); // use for debugging
+  //  Serial.begin(38400); // use for debugging
 
   // Digital outputs initialization
   digitalRead(DATA_IN_PIN);
@@ -107,8 +106,6 @@ void SetupPins(void){
   scale.set_gain();
   scale.set_scale(-10000);
   scale.tare();                // reset the scale to 0
-  
- 
 }
 
 dataForController_t getControllerData(void){
@@ -122,7 +119,6 @@ dataForController_t getControllerData(void){
   delayMicroseconds(5);               // Wait for signal to settle
   digitalWrite(MODE_PIN, HIGH);        // Switch to serial mode: one data bit is output on each clock falling edge
 
-
   for (int i = 0; i < 16; i++)         // Iteration over both 8 bit registers
   {
     digitalWrite(CLOCK_PIN, LOW);      // Generate clock falling edge
@@ -134,14 +130,11 @@ dataForController_t getControllerData(void){
     delayMicroseconds(5);             // Wait for signal to settle
   }
 
-
   //Hand Brake Section
-
   int hbState = 0;
   hbState = abs(scale.get_units(1));
-  if (hbState>20) G27Shifter.leftStickY = hbState;
-  else G27Shifter.leftStickY =0 ; 
-
+  if (hbState>20)  G27Shifter.rightStickX = map(hbState,0,511,0,255);
+  else G27Shifter.rightStickX = 0 ; 
 
   //Shifter Section
   // Reading of shifter position
@@ -182,7 +175,7 @@ dataForController_t getControllerData(void){
     for (int gr = 1;gr<8;gr++)
     {
     //  G27Shifter.clearButton(gr, G27Shifter);
-    clearButton(gr, G27Shifter);
+    G27Shifter = clearButton(gr, G27Shifter);
     }
   } 
   
@@ -191,10 +184,10 @@ dataForController_t getControllerData(void){
   //Depress virtual button for current gear
   
   //all other normal button states for buttons 8 - 16    
-      // Set state of virtual buttons for all the physical buttons (Excluding Gears and the hat switch)
-  for (int i = 4; i < 12; i++) {
-     if (b[i]>0) setButton(b[i],G27Shifter);
-     else clearButton(b[i],G27Shifter);
+  // Set state of virtual buttons for all the physical buttons (Excluding Gears and the hat switch)
+  for (int iBtn = 4; iBtn  < 12; iBtn ++) {
+    int ButtontoPress = iBtn+4;
+    if (b[iBtn] == 1) G27Shifter = setButton (ButtontoPress, G27Shifter);              
   }    
       
  // Hat Switch Section
