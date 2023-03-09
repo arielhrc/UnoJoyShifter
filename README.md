@@ -1,30 +1,32 @@
-Adaptação do cambio do G27 para USB utilizando um Arduino UNO R3
+[Leia esta página em português](https://github.com/arielhrc/UnoJoyShifter/blob/master/README-pt.md)
 
-Pré-requisito: instalar o software FLIP-Installer, que esta na pasta UnoJoy. E o Arduino IDE (né?)
-1. Conecta o seu Arduino UNO R3 no computador e faz o upload do codigo no UnoShifter.ino
-2. Depois de upado, voce vai colocar o Arduino em modo DFU. Basta fazer contato nos dois pinos que ficam pertinho do conector USB.
-3. Agora voce roda o TurnIntoAJoystick.bat, quando acabar o processo é só desconectar e reconectar o arduino que ele sera reconhecido como um joystick no windows
+G27 shifter USB adapter using an Arduino UNO R3
 
-A LIGAÇAO DOS FIOS.
+Prerequisite: Install [Flip](https://www.microchip.com/en-us/development-tool/flip) and Arduino IDE (duh?)
+1. Connect your Arduino UNO and upload the code UnoShifter.ino
+2. Then, put your Arduino in DFU mode. Short the two pins near the USB port.
+3. Now, runs TurnIntoAJoystick.bat, inside UnoJoy folder. 
+4. When the process is over, unplug and replug your board, it will be detected as UnoJoy Joystick. (check on control panel)
+
+WIRING
 --------------------
 
 
-|DB9 | Cor        |Cambio  |Descriçao            |Arduino      |
+|DB9 | Color      |Shifter |Description          |Arduino      |
 |----|------------|--------|---------------------|-------------|
-|  1 | Roxo       | 1      | Clock               |pino 2       |
-|  2 | Cinza      | 7      | Data                |pino 3       |
-|  3 | Amarelo    | 5      | Button !CS & !PL    |pino 4       |
-|  4 | Laranja    | 3      | Shifter X axis      |pino A0      |
-|  5 | Branco     | 2      | SPI input           |não utilizado|
-|  6 | Preto      | 8      | GND                 |GND          |
-|  7 | Vermelho   | 6      | +5V                 |VCC          |
-|  8 | Verde      | 4      | Shifter Y axis      |pino A1      |
-|  9 | Vermelho   | 9      | +5V                 |VCC          |
+|  1 | Purple     | 1      | Clock               |pin  2       |
+|  2 | Grey       | 7      | Data                |pin  3       |
+|  3 | Yellow     | 5      | Button !CS & !PL    |pin  4       |
+|  4 | Orange     | 3      | Shifter X axis      |pin  A0      |
+|  5 | White      | 2      | SPI input           |not connected|
+|  6 | Black      | 8      | GND                 |GND          |
+|  7 | Red        | 6      | +5V                 |VCC          |
+|  8 | Green      | 4      | Shifter Y axis      |pin  A1      |
+|  9 | Red        | 9      | +5V                 |VCC          |
 
 
 
-O codigo anterior incluia um freio de mao com sensor hall, que pra compilar o codigo eu tive que comentar tudo.
-Codigo original em https://github.com/jssting/UnoJoyShifter
-Caso queira utilizar o arduino novamente como arduino é só entrar em DFU novamente e rodar o TurnIntoAnArduino.bat
-Contato: Ariel Carvalho Facebook no grupo Volantes caseiros
+Original Code: https://github.com/jssting/UnoJoyShifter
+If you want to use your arduino normally again, just puts it in DFU again and runs TurnIntoAnArduino.bat
+Eddited by Ariel Carvalho
 
