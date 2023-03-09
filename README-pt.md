@@ -1,3 +1,5 @@
+[Read this page in English](https://github.com/arielhrc/UnoJoyShifter/blob/master/README.md)
+
 Pré-requisito: instalar o software FLIP-Installer, que esta na pasta UnoJoy. E o Arduino IDE (né?)
 1: Conecta o seu Arduino UNO R3 no computador e faz o upload do codigo no UnoShifter.ino
 2: Depois de upado, voce vai colocar o Arduino em modo DFU. Basta fazer contato nos dois pinos que ficam pertinho do conector USB.
